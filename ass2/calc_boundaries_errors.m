@@ -1,14 +1,13 @@
-function boundaries_with_errors = calc_boundaries_errors( posteriors )
+function boundaries_with_errors = calc_boundaries_errors( dataset, costs )
 
-    classes = size(posteriors, 1);
-    values = size(posteriors, 2);
+    classes = size(dataset, 1);
+    values = size(dataset, 2);
     possible_boundaries = values - 1;
     boundaries_with_errors = zeros(classes, possible_boundaries);
     
     for boundary = 1:possible_boundaries;
-        boundaries_with_errors(1, boundary) = sum(posteriors(1, 1:boundary-1));
-        boundaries_with_errors(2, boundary) = sum(posteriors(2, boundary:possible_boundaries));
+        boundaries_with_errors(1, boundary) = costs(1) * sum(dataset(1, boundary:possible_boundaries+1));
+        boundaries_with_errors(2, boundary) = costs(2) * sum(dataset(2, 1:boundary-1));
     end
 
 end
-
