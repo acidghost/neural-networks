@@ -5,7 +5,7 @@ load('pics.mat');
 x = pics - ones(400, 2576) * mean(mean(pics));
 t = classGlass;
 yg = zeros(1, 400);
-nhidden = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 22, 28, 40];
+nhidden = [1, 2, 3, 4, 5, 6, 15, 25, 50, 100, 2576];
 percentages_correct = zeros(10, 1);
 confusion_matrices = zeros(2, 2, length(nhidden));
 for j = 1:length(nhidden)
@@ -20,7 +20,7 @@ for j = 1:length(nhidden)
         t_test = t(1, test_values)';
 
         nout = 1;
-        ncycles = 100; 
+        ncycles = 20; 
         net = mlp(2576, nhidden(j), nout, 'logistic');
         options = foptions;
         options(1) = 1;
@@ -44,3 +44,4 @@ end
 
 scatter(nhidden, percentages_correct);
 disp(confusion_matrices);
+max(percentages_correct)
