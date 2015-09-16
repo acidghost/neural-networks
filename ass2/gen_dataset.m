@@ -2,10 +2,10 @@ function dataset = gen_dataset( samples, values )
 
     num_values = size(values, 2);
     mean_values = mean(values);
-    epsilon = max(values) / 4;
+    epsilon = max(values) / 5;
     mu1 = mean_values - epsilon;
     mu2 = mean_values + epsilon;
-    sigma = mean_values - 1.4 * epsilon;
+    sigma = mean_values - 1.8 * epsilon;
     dataset = zeros(2, num_values);
     i = 1;
     while i <= samples;
