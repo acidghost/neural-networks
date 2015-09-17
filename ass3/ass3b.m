@@ -27,7 +27,7 @@ for j = 1:length(nhidden)
         options(14) = ncycles;
         options(18) = 0.01;
 
-        [net] = netopt(net, options, x_training, t_train, 'graddesc');
+        [net] = netopt(net, options, x_training, t_train, 'graddesc'); % quasinewton computationally very expensive when using large numbers of hidden nodes
         yg(test_values) = mlpfwd(net, x_test);
     end
     
