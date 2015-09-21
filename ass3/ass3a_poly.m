@@ -51,8 +51,18 @@ function [ error_by_degree ] = ass3a_poly( data, fold_size )
             RMSE(j, 2) = sqrt(mean((Y - t_test).^2));
 
             % Plot regression line
-            plot(x, polyval(p, x))
+            [xsorted, I] = sort(x);
+            Yhat = polyval(p, x);
+            ysorted = Yhat(I);
+            plot(xsorted, ysorted)
         end
+        
+        % Find regression line against all data
+        % p = polyfit(x, t, degree);
+        % [xsorted, I] = sort(x);
+        % Yhat = polyval(p, x);
+        % ysorted = Yhat(I);
+        % plot(xsorted, ysorted)
         
         legendstr = cellstr(num2str((1:fold_size)'))';
         legend([ 'data' legendstr ], 'Location', 'southeast')

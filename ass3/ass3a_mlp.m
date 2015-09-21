@@ -81,6 +81,7 @@ function [ error_by_hidden_nodes ] = ass3a_mlp( data, fold_size, func, alpha, cy
                     break;
                 end
             end
+            % net = netopt(net, [1; zeros(17, 1)], x_train, t_train, 'graddesc');
 
             Yhat = zeros(n_examples, 1);
 
@@ -95,8 +96,30 @@ function [ error_by_hidden_nodes ] = ass3a_mlp( data, fold_size, func, alpha, cy
             RMSE(j, 2) = sqrt(mean((Y - t_test).^2));
 
             % Plot regression line
-            plot(x, Yhat)
+            [xsorted, I] = sort(x);
+            ysorted = Yhat(I);
+            plot(xsorted, ysorted)
         end
+        
+        % Find regression line against all data
+%         net = mlp(nin, nhidden, nout, func);
+%         for k = 1:cycles;
+%             [Y, Z] = mlpfwd(net, x);
+% 
+%             G = mlpbkp(net, x, Z, Y - t);
+% 
+%             old_weights = netpak(net);
+%             weights = old_weights - alpha * G;
+%             net = netunpak(net, weights);
+% 
+%             if length(G(G < conv_threshold)) == length(G)
+%                 break;
+%             end
+%         end
+%         Yhat = mlpfwd(net, x);
+%         [xsorted, I] = sort(x);
+%         ysorted = Yhat(I);
+%         plot(xsorted, ysorted)
         
         legendstr = cellstr(num2str((1:fold_size)'))';
         legend([ 'data' legendstr ], 'Location', 'southeast')
