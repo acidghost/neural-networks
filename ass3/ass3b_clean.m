@@ -1,6 +1,7 @@
 clear all; close all; clc;
 load('pics.mat');
 
+do_gabor = true;
 fold_size = 10;
 [ n_examples, nin ] = size(pics);
 nout = 1;
@@ -13,17 +14,20 @@ options(1) = 1;
 options(14) = cycles;
 options(17) = alpha;
 
-% gaborArray = gaborFilterBank(5, 8, 39, 39);
-
-% Preprocess data
-% x = pics - mean(mean(pics));
-% t = classGlass - mean(classGlass);
-x = pics;
-% Gabor feature vector length: (m*n*u*v)/(d1*d2)
-% for i = 1:size(pics, 1);
-%     x(i, :) = gaborFeatures(pics(i, :), gaborArray, 8, 8)';
-% end
-% nin = length(x(1, :));
+if do_gabor
+    gaborArray = gaborFilterBank(5, 8, 39, 39);
+    % Gabor feature vector
+    img1 = gaborFeatures(pics(1, :), gaborArray, 8, 8)';
+    x = zeros(n_examples, length(img1));
+    x(1, :) = img1;
+    for i = 2:size(pics, 1);
+        disp(['Doing Gabor image ', num2str(i)])
+        x(i, :) = gaborFeatures(pics(i, :), gaborArray, 8, 8)';
+    end
+else
+    x = pics;
+end
+nin = length(x(1, :));
 t = classGlass;
 t(t == 0) = -1;
 
