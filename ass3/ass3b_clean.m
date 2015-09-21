@@ -8,6 +8,10 @@ cycles = 100;
 alpha = 0.01;
 % hidden_nodes = [1, 2, 3, 4, 5, 6, 7, 15, 25, 50, 100, 200, 1000, nin];
 hidden_nodes = [ 2, 3, 4, 5, 7, 10, 15, 25 ];
+options = zeros(18, 1);
+options(1) = 1;
+options(14) = cycles;
+options(17) = alpha;
 
 % gaborArray = gaborFilterBank(5, 8, 39, 39);
 
@@ -63,8 +67,10 @@ for i = 1:length(hidden_nodes);
             old_weights = netpak(net);
             weights = old_weights - alpha * G;
             net = netunpak(net, weights);
-            % w1 = net.w1 - alpha * G(1:nin)
         end
+        
+        % Do backprop (graddesc)
+        % net = netopt(net, options, x_train, t_train, 'graddesc');
         
         Y = mlpfwd(net, x)';
         Y(Y >= 0) = 1;
