@@ -4,7 +4,7 @@ load('pics.mat');
 fold_size = 10;
 [ n_examples, nin ] = size(pics);
 nout = 1;
-cycles = 100;
+cycles = 50;
 alpha = 0.01;
 hidden_nodes = [1, 2, 3, 4, 5, 7, 10, 15, 25, 50, 100, 200, (n_examples - (n_examples/fold_size))];
 % hidden_nodes = [ 2, 3, 4, 5, 7, 10, 15, 25 ];
@@ -13,17 +13,7 @@ options(1) = 1;
 options(14) = cycles;
 options(17) = alpha;
 
-% gaborArray = gaborFilterBank(5, 8, 39, 39);
-
-% Preprocess data
-% x = pics - mean(mean(pics));
-% t = classGlass - mean(classGlass);
 x = pics;
-% Gabor feature vector length: (m*n*u*v)/(d1*d2)
-% for i = 1:size(pics, 1);
-%     x(i, :) = gaborFeatures(pics(i, :), gaborArray, 8, 8)';
-% end
-% nin = length(x(1, :));
 t = classGlass;
 t(t == 0) = -1;
 
@@ -39,7 +29,7 @@ confmat_by_hidden_nodes.nodes = hidden_nodes;
 confmat_by_hidden_nodes.matrices = zeros(2, 2, length(hidden_nodes));
 for i = 1:length(hidden_nodes);
     nhidden = hidden_nodes(i);
-    disp(['Doing ', num2str(nhidden), ' hidden nodes'])
+    disp(['Doing K=', num2str(nhidden)])
     
     % Use K-fold cross validation
     confusionmat = zeros(2, 2, fold_size);
@@ -53,28 +43,11 @@ for i = 1:length(hidden_nodes);
         x_train = x(train_indices, :);
         t_train = t(train_indices)';
         
-        % Init network
-        net = mlp(nin, nhidden, nout, 'linear');
-        for k = 1:cycles;
-            % Feed-forward the inputs through the network
-            [Y, Z, A] = mlpfwd(net, x_train);
-            
-            Y(Y >= 0) = 1;
-            Y(Y < 0) = -1;
-
-            % Back-propagate the error
-            G = mlpbkp(net, x_train, Z, Y - t_train);
-
-            % Update weights in network
-            old_weights = netpak(net);
-            weights = old_weights - alpha * G;
-            net = netunpak(net, weights);
-        end
+        net = rbf(nin, nhidden, nout, 'gaussian');
+        net = rbfsetbf(net, options, x);
+        net = rbftrain(net, options, x_train, t_train);
         
-        % Do backprop (graddesc)
-        % net = netopt(net, options, x_train, t_train, 'graddesc');
-        
-        Y = mlpfwd(net, x)';
+        Y = rbffwd(net, x)';
         Y(Y >= 0) = 1;
         Y(Y < 0) = -1;
         true_positive = sum(Y == 1 & t == 1);
