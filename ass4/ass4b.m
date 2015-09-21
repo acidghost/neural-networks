@@ -1,4 +1,4 @@
-clear all; close all; clc;
+clear; close all; clc;
 
 n_examples = 1000;
 scale = 10;
