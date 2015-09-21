@@ -1,18 +1,24 @@
-function [ error_by_hidden_nodes ] = ass3a_mlp( data, fold_size, func, alpha, cycles, conv_threshold )
+function [ error_by_hidden_nodes ] = ass3a_mlp( data, fold_size, backprop, func, alpha, cycles, conv_threshold )
     switch nargin
         case 2
+            backprop = true;
             func = 'linear';
             alpha = 0.01;
             cycles = 300;
             conv_threshold = 0.001;
         case 3
+            func = 'linear';
             alpha = 0.01;
             cycles = 300;
             conv_threshold = 0.001;
         case 4
+            alpha = 0.01;
             cycles = 300;
             conv_threshold = 0.001;
         case 5
+            cycles = 300;
+            conv_threshold = 0.001;
+        case 6
             conv_threshold = 0.001;
         otherwise
             error('Wrong number of arguments')
@@ -64,24 +70,28 @@ function [ error_by_hidden_nodes ] = ass3a_mlp( data, fold_size, func, alpha, cy
 
             % Init network
             net = mlp(nin, nhidden, nout, func);
-            for k = 1:cycles;
-                % Feed-forward the inputs through the network
-                [Y, Z] = mlpfwd(net, x_train);
-                
-                % Back-propagate the error
-                G = mlpbkp(net, x_train, Z, Y - t_train);
-                
-                % Update weights in network
-                old_weights = netpak(net);
-                weights = old_weights - alpha * G;
-                net = netunpak(net, weights);
-                
-                % Check if convergence is reached
-                if length(G(G < conv_threshold)) == length(G)
-                    break;
+            if backprop
+                for k = 1:cycles;
+                    % Feed-forward the inputs through the network
+                    [Y, Z] = mlpfwd(net, x_train);
+
+                    % Back-propagate the error
+                    G = mlpbkp(net, x_train, Z, Y - t_train);
+
+                    % Update weights in network
+                    old_weights = netpak(net);
+                    weights = old_weights - alpha * G;
+                    net = netunpak(net, weights);
+
+                    % Check if convergence is reached
+                    if length(G(G < conv_threshold)) == length(G)
+                        break;
+                    end
                 end
+            else
+                % net = netopt(net, [1; zeros(17, 1)], x_train, t_train, 'graddesc');
+                net = mlptrain(net, x_train, t_train, cycles);
             end
-            % net = netopt(net, [1; zeros(17, 1)], x_train, t_train, 'graddesc');
 
             Yhat = zeros(n_examples, 1);
 
