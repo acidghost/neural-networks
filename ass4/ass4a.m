@@ -1,6 +1,7 @@
 clear; close all; clc;
 load('pics.mat');
 
+do_gabor = true;
 fold_size = 10;
 [ n_examples, nin ] = size(pics);
 nout = 1;
@@ -13,7 +14,20 @@ options(1) = 1;
 options(14) = cycles;
 options(17) = alpha;
 
-x = pics;
+if do_gabor
+    gaborArray = gaborFilterBank(5, 8, 39, 39);
+    % Gabor feature vector
+    img1 = gaborFeatures(pics(1, :), gaborArray, 8, 8)';
+    x = zeros(n_examples, length(img1));
+    x(1, :) = img1;
+    for i = 2:size(pics, 1);
+        disp(['Doing Gabor image ', num2str(i)])
+        x(i, :) = gaborFeatures(pics(i, :), gaborArray, 8, 8)';
+    end
+else
+    x = pics;
+end
+nin = length(x(1, :));
 t = classGlass;
 t(t == 0) = -1;
 
@@ -44,7 +58,7 @@ for i = 1:length(hidden_nodes);
         t_train = t(train_indices)';
         
         net = rbf(nin, nhidden, nout, 'gaussian');
-        net = rbfsetbf(net, options, x);
+        net = rbfsetbf(net, options, x_train);
         net = rbftrain(net, options, x_train, t_train);
         
         Y = rbffwd(net, x)';

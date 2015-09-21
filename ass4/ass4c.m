@@ -8,7 +8,6 @@ nout = 1;
 
 x = pics;
 t = classGlass;
-t(t == 0) = -1;
 
 svmmodel = initlssvm(x, t', 'classification', [], [], 'RBF_kernel');
 
