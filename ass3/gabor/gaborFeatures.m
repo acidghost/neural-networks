@@ -84,7 +84,7 @@ for i = 1:u
 end
 
 
-%% Show filtered images (Please comment this section if not needed!)
+% Show filtered images (Please comment this section if not needed!)
 
 % % Show real parts of Gabor-filtered images
 % figure('NumberTitle','Off','Name','Real parts of Gabor filters');
@@ -94,7 +94,7 @@ end
 %         imshow(real(gaborResult{i,j}),[]);
 %     end
 % end
-% 
+
 % % Show magnitudes of Gabor-filtered images
 % figure('NumberTitle','Off','Name','Magnitudes of Gabor filters');
 % for i = 1:u

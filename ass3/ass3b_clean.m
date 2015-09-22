@@ -8,7 +8,7 @@ nout = 1;
 cycles = 100;
 alpha = 0.01;
 hidden_nodes = [1, 2, 3, 4, 5, 7, 10, 15, 25, 50, 100, 200, (n_examples - (n_examples/fold_size))];
-% hidden_nodes = [ 2, 3, 4, 5, 7, 10, 15, 25 ];
+
 options = zeros(18, 1);
 options(1) = 1;
 options(14) = cycles;
@@ -75,9 +75,6 @@ for i = 1:length(hidden_nodes);
             net = netunpak(net, weights);
         end
         
-        % Do backprop (graddesc)
-        % net = netopt(net, options, x_train, t_train, 'graddesc');
-        
         Y = mlpfwd(net, x)';
         Y(Y >= 0) = 1;
         Y(Y < 0) = -1;
@@ -86,11 +83,11 @@ for i = 1:length(hidden_nodes);
         true_negative = sum(Y == -1 & t == -1);
         false_negative = sum(Y == -1 & t == 1);
         confusionmat(:, :, j) = [ ...
-            true_positive, false_negative;...
-            false_positive, true_negative ];
+            true_positive, false_positive;...
+            false_negative, true_negative ];
     end
     
-    confmat_by_hidden_nodes.matrices(:, :, i) = [ mean(confusionmat(1, 1, :)), mean(confusionmat(1, 2, :)); mean(confusionmat(2, 1, :)), mean(confusionmat(2, 2, :)) ]
+    confmat_by_hidden_nodes.matrices(:, :, i) = [ mean(confusionmat(1, 1, :)), mean(confusionmat(1, 2, :)); mean(confusionmat(2, 1, :)), mean(confusionmat(2, 2, :)) ];
 end
 
 disp(confmat_by_hidden_nodes)
