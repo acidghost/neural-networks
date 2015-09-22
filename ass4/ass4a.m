@@ -1,6 +1,7 @@
 clear; close all; clc;
 load('pics.mat');
 
+do_gabor = true;
 fold_size = 10;
 [ n_examples, nin ] = size(pics);
 nout = 1;
@@ -13,7 +14,20 @@ options(1) = 1;
 options(14) = cycles;
 options(17) = alpha;
 
-x = pics;
+if do_gabor
+    gaborArray = gaborFilterBank(5, 8, 39, 39);
+    % Gabor feature vector
+    img1 = gaborFeatures(pics(1, :), gaborArray, 8, 8)';
+    x = zeros(n_examples, length(img1));
+    x(1, :) = img1;
+    for i = 2:size(pics, 1);
+        disp(['Doing Gabor image ', num2str(i)])
+        x(i, :) = gaborFeatures(pics(i, :), gaborArray, 8, 8)';
+    end
+else
+    x = pics;
+end
+nin = length(x(1, :));
 t = classGlass;
 t(t == 0) = -1;
 
@@ -37,23 +51,23 @@ for i = 1:length(hidden_nodes);
         fold_index = fold_indices(j, :);
         % Use j-th block for testing
         x_test = x(fold_index, :);
-        t_test = t(fold_index)';
+        t_test = t(fold_index);
         % Use remaining for training
         train_indices = setdiff(1:n_examples, fold_index);
         x_train = x(train_indices, :);
         t_train = t(train_indices)';
         
         net = rbf(nin, nhidden, nout, 'gaussian');
-        net = rbfsetbf(net, options, x);
+        net = rbfsetbf(net, options, x_train);
         net = rbftrain(net, options, x_train, t_train);
         
-        Y = rbffwd(net, x)';
+        Y = rbffwd(net, x_test)';
         Y(Y >= 0) = 1;
         Y(Y < 0) = -1;
-        true_positive = sum(Y == 1 & t == 1);
-        false_positive = sum(Y == 1 & t == -1);
-        true_negative = sum(Y == -1 & t == -1);
-        false_negative = sum(Y == -1 & t == 1);
+        true_positive = sum(Y == 1 & t_test == 1);
+        false_positive = sum(Y == 1 & t_test == -1);
+        true_negative = sum(Y == -1 & t_test == -1);
+        false_negative = sum(Y == -1 & t_test == 1);
         confusionmat(:, :, j) = [ ...
             true_positive, false_negative;...
             false_positive, true_negative ];
@@ -66,6 +80,6 @@ disp(confmat_by_hidden_nodes)
 
 for i = 1:length(confmat_by_hidden_nodes.nodes);
     nhidden = confmat_by_hidden_nodes.nodes(i);
-    accuracy = trace(confmat_by_hidden_nodes.matrices(:, :, i)) / n_examples;
+    accuracy = trace(confmat_by_hidden_nodes.matrices(:, :, i)) / (n_examples / fold_size);
     disp(['Accuracy for ', num2str(nhidden), ' hidden nodes: ', num2str(accuracy)])
 end

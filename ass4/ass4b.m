@@ -4,13 +4,20 @@ n_examples = 1000;
 scale = 10;
 dataset = get_data(n_examples, scale);
 
-lssvmparams = { dataset(:, 1:2), dataset(:, 3), 'classification', 10, .4 };
+p_or_not = {'preprocess' 'original'};
 
-[alpha, b] = trainlssvm(lssvmparams);
+for i = 1:length(p_or_not);
+    p = p_or_not{i};
 
-lssvmout = simlssvm(lssvmparams, { alpha, b }, dataset(:, 1:2));
+    lssvmmodel = { dataset(:, 1:2), dataset(:, 3), 'classification', 1, 0.5, 'RBF_kernel', p };
 
-correct = sum(lssvmout == dataset(:, 3));
-disp(['Correctly classified: ', num2str(correct)])
+    lssvmmodel = trainlssvm(lssvmmodel);
 
-plotlssvm(lssvmparams, { alpha, b })
+    lssvmout = simlssvm(lssvmmodel, dataset(:, 1:2));
+
+    correct = sum(lssvmout == dataset(:, 3));
+    disp([p, ' correctly classified: ', num2str(correct)])
+
+    figure
+    plotlssvm(lssvmmodel)
+end
