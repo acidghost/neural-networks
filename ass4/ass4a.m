@@ -51,7 +51,7 @@ for i = 1:length(hidden_nodes);
         fold_index = fold_indices(j, :);
         % Use j-th block for testing
         x_test = x(fold_index, :);
-        t_test = t(fold_index)';
+        t_test = t(fold_index);
         % Use remaining for training
         train_indices = setdiff(1:n_examples, fold_index);
         x_train = x(train_indices, :);
@@ -61,13 +61,13 @@ for i = 1:length(hidden_nodes);
         net = rbfsetbf(net, options, x_train);
         net = rbftrain(net, options, x_train, t_train);
         
-        Y = rbffwd(net, x)';
+        Y = rbffwd(net, x_test)';
         Y(Y >= 0) = 1;
         Y(Y < 0) = -1;
-        true_positive = sum(Y == 1 & t == 1);
-        false_positive = sum(Y == 1 & t == -1);
-        true_negative = sum(Y == -1 & t == -1);
-        false_negative = sum(Y == -1 & t == 1);
+        true_positive = sum(Y == 1 & t_test == 1);
+        false_positive = sum(Y == 1 & t_test == -1);
+        true_negative = sum(Y == -1 & t_test == -1);
+        false_negative = sum(Y == -1 & t_test == 1);
         confusionmat(:, :, j) = [ ...
             true_positive, false_negative;...
             false_positive, true_negative ];
@@ -80,6 +80,6 @@ disp(confmat_by_hidden_nodes)
 
 for i = 1:length(confmat_by_hidden_nodes.nodes);
     nhidden = confmat_by_hidden_nodes.nodes(i);
-    accuracy = trace(confmat_by_hidden_nodes.matrices(:, :, i)) / n_examples;
+    accuracy = trace(confmat_by_hidden_nodes.matrices(:, :, i)) / (n_examples / fold_size);
     disp(['Accuracy for ', num2str(nhidden), ' hidden nodes: ', num2str(accuracy)])
 end
