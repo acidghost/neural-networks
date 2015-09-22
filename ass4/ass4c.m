@@ -53,7 +53,7 @@ accuracytest = trace(avgconfmattest) / (n_examples / fold_size);
 disp(['Mean accuracy test: ', num2str(accuracytest)])
 
 avgconfmattrain = [mean(confusionmatrain(1,1,:)), mean(confusionmatrain(1,2,:)); mean(confusionmatrain(2,1,:)), mean(confusionmatrain(2,2,:))]
-accuracytrain = trace(avgconfmattrain) / (n_examples / fold_size);
+accuracytrain = trace(avgconfmattrain) / (n_examples - n_examples / fold_size);
 disp(['Mean accuracy train: ', num2str(accuracytrain)])
 
 % svmmodel = initlssvm(x, t', 'classification', [], [], 'RBF_kernel');
