@@ -7,7 +7,7 @@ load('pics.mat');
 pics2D = reshape_pics(pics, 56, 46);
 
 % Test different number of principal components
-components_to_try = 1:2:60;
+components_to_try = [1:60 61:5:199 200:100:2000 nin];
 mean_correlations = zeros(length(components_to_try), 1);
 for n = 1:length(components_to_try);
     n_components = components_to_try(n);
@@ -43,7 +43,13 @@ for n = 1:length(components_to_try);
     disp(['Mean correlation with ', num2str(n_components), ' components: ', num2str(mean_correlations(n))])
 end
 
-plot(components_to_try, mean_correlations)
+subplot(1, 2, 1)
+plot(components_to_try, mean_correlations, 'o-')
+xlabel('Number of principal components')
+ylabel('Mean correlation of images')
+
+subplot(1, 2, 2)
+semilogx(components_to_try, mean_correlations, 'o-')
 xlabel('Number of principal components')
 ylabel('Mean correlation of images')
 
