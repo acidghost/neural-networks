@@ -8,16 +8,16 @@ end
 
 test_map_sizes = true;
 test_learning_rates = true;
+test_one_dimensional = true;
+test_by_three = true;
 
 nin = 2;
 map_sides = [2:10 11:2:21];
-map_size = [16, 16];
 options(1) = 0;     % Don't show iteration info
 options(5) = 1;     % Random sampled
-options(14) = 400;  % # of iterations 
+options(14) = 1000;  % # of iterations 
 options(15) = 1;    % Final neighborhood size
 options(16) = 0.05;  % Final learning rate
-options(17) = round(sqrt(map_size(1,2)^2 + map_size(1,1)^2)/2); % initial neighborhood size
 options(18) = 0.9;  % Initial learning rate
 
 if test_map_sizes
@@ -55,6 +55,8 @@ if test_map_sizes
     ylabel('Neurons inside training star shape')
 end
 
+map_size = [16, 16];
+options(17) = round(sqrt(map_size(1,2)^2 + map_size(1,1)^2)/2); % initial neighborhood size
 figure
 subplot(1, 4, 1)
 plot(star(:, 1), star(:, 2), 'o')
@@ -73,7 +75,7 @@ map2 = net2.map;
 subplot(1, 4, 3)
 plot_lattice(map2, star)
 title(['SOM after ordering _{map\_size=[', num2str(map_size(1)), ', ', num2str(map_size(2)), ']}'])
-options(14) = 400;   % # of iterations 
+options(14) = 1000;   % # of iterations 
 options(16) = 0.05;  % Final learning rate
 options(18) = 0.5;  % Initial learning rate
 net3 = somtrain(net2, options, star);
@@ -85,6 +87,7 @@ title(['SOM after convergence _{map\_size=[', num2str(map_size(1)), ', ', num2st
 
 if test_learning_rates
     map_size = [16, 16];
+    options(17) = round(sqrt(map_size(1,2)^2 + map_size(1,1)^2)/2); % initial neighborhood size
     % Testing initial learning rate
     init_learnings = .9:-.1:.1;
     options(16) = .05;  % Final learning rate
@@ -138,4 +141,44 @@ if test_learning_rates
 end
 
 
-disp('\nPlease wait for the graphs to load...')
+if test_one_dimensional
+    map_sizes = [5, 10, 25, 50, 100, 200, 400, 800, samples];
+    figure
+    for i = 1:length(map_sizes);
+        map_size = [1, map_sizes(i)];
+        disp(['Doing SOM with map of size [', num2str(map_size), ']'])
+        options(17) = round(sqrt(map_size(1,2)^2 + map_size(1,1)^2)/2); % initial neighborhood size
+        options(18) = 0.9;  % Initial learning rate
+        options(16) = 0.05;  % Final learning rate
+        net = som(nin, map_size);
+        net = somtrain(net, options, star);
+        map = net.map;
+        
+        subplot(ceil(length(map_sizes) / 3), 3, i)
+        plot_lattice(map, star)
+        title(['map\_size=[', num2str(map_size), ']'])
+    end
+end
+
+
+if test_by_three
+    map_sizes = [5, 10, 25, 50, 100, 300, 400, 800, samples];
+    figure
+    for i = 1:length(map_sizes);
+        map_size = [3, map_sizes(i)];
+        disp(['Doing SOM with map of size [', num2str(map_size), ']'])
+        options(17) = round(sqrt(map_size(1,2)^2 + map_size(1,1)^2)/2); % initial neighborhood size
+        options(18) = 0.9;  % Initial learning rate
+        options(16) = 0.05;  % Final learning rate
+        net = som(nin, map_size);
+        net = somtrain(net, options, star);
+        map = net.map;
+        
+        subplot(ceil(length(map_sizes) / 3), 3, i)
+        plot_lattice(map, star)
+        title(['map\_size=[', num2str(map_size), ']'])
+    end
+end
+
+
+disp('Please wait for the graphs to load...')
