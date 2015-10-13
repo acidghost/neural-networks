@@ -1,3 +1,5 @@
+clear; clf;
+
 load 'dataset_final_assignment.mat';
 
 % grid size
@@ -33,45 +35,9 @@ source = [542.0, max_y-439.0];
 % 
 % figure
 % plot(path(:, 1), path(:, 2))
-% 
-% Xpath = path(1:end_time-1, :);
-% Xtra = [Xpath pdist2(Xpath, source)];
-% Ytra = path(2:end_time, :);
-% model = initlssvm( Xtra, Ytra, 'f', [], [], 'RBF_kernel' );
-% model = tunelssvm(model, 'simplex', 'crossvalidatelssvm', { 10, 'mae' });
-% model = trainlssvm(model);
-% Yhs = simlssvm(model, Xtra);
-% 
-% error = diag(pdist2(Yhs, Ytra));
-% disp(['Error is ', num2str(sum(error))])
 
-Xpaths = zeros((end_time-1) * number_of_agents, 2);
-Ypaths = zeros((end_time-1) * number_of_agents, 2);
-Xcounter = 1;
-Ycounter = 1;
-for agent = 1:number_of_agents;
-    for i = 1:end_time;
-        if i == 1
-            Xpaths(Xcounter, :) = [data(i, (2*a)-1), data(i, 2*a)];
-            Xcounter = Xcounter + 1;
-        elseif i == end_time;
-            Ypaths(Ycounter, :) = [data(i, (2*a)-1), data(i, 2*a)];
-            Ycounter = Ycounter + 1;
-        else
-            Xpaths(Xcounter, :) = [data(i, (2*a)-1), data(i, 2*a)];
-            Xcounter = Xcounter + 1;
-            Ypaths(Ycounter, :) = [data(i, (2*a)-1), data(i, 2*a)];
-            Ycounter = Ycounter + 1;
-        end
-    end
+RMSEs = zeros(number_of_agents, 1);
+for agent_test = 1:number_of_agents;
+    [model, Xtes, Xpath, Ypath, RMSE] = svm_one_agent_out(data, source, agent_test);
+    RMSEs(agent_test) = RMSE;
 end
-
-Xtra = [Xpaths pdist2(Xpaths, source)];
-model = initlssvm( Xtra, Ypaths, 'f', [], [], 'RBF_kernel' );
-model = tunelssvm(model, 'simplex', 'crossvalidatelssvm', { 10, 'mae' });
-model = trainlssvm(model);
-Yhs = simlssvm(model, Xtra);
-
-error = diag(pdist2(Yhs, Ypaths));
-MSE = mean(sqrt(error));
-disp(['MSE is ', num2str(MSE)])
