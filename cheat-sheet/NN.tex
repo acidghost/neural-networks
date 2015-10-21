@@ -1,0 +1,78 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\sign}{}
+
+\title{Neural Networks cheat-sheet}
+\author{Andrea Jemmett}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Perceptron}
+\subsection{Perceptron Convergence Algorithm}
+\footnotesize
+\begin{enumerate}
+	\item Variables \& parameters:\\
+	$\mathbf{x}(n) = \left[1, x_1(n), \dots, x_m(n)\right]^T$\\
+	$\mathbf{w}(n) = \left[b, w_1(n), \dots, w_m(n)\right]^T$\\
+	$y(n) = \mbox{net out}$\\
+	$d(n) = \mbox{target}$\\
+	$\eta = \mbox{learning rate}$
+	\item \emph{Initialization} $\mathbf{w}(0) = \mathbf{0}$ then for $n = 1, 2, \dots$ do the following
+	\item \emph{Activation} Feed input $\mathbf{x}(n)$ to network
+	\item \emph{Compute actual response} as $y(n) = \sign(\mathbf{w}^T(n)\mathbf{x}(n))$
+	\item \emph{Adaptation of weight vector} update weights using:\\
+	$\mathbf{w}(n+1) = \mathbf{w}(n)+\eta[d(n)-y(n)]\mathbf{x}(n)$\\
+	where:\\
+	$d(n) = \begin{cases} +1 & \mbox{if }x(n)\mbox{ belongs to class }C_1 \\ -1 & \mbox{if }x(n)\mbox{ belongs to class }C_2 \end{cases}$
+\end{enumerate}
+\normalsize
+
+\section{Statistic Based Methods}
+\begin{enumerate}
+	\item \emph{Observation density / class-conditional / likelihood}\\ $P(X=x|C_i) = \frac{\mbox{\# x samples}}{\mbox{\# of samples in }C_i}$
+	\item \emph{Prior} $P(C_i) = \frac{\mbox{\# samples in }C_i}{\mbox{\# all samples}}$
+	\item \emph{Posterior} $P(C_i|X=x) = \frac{\mbox{likelihood x prior}}{\mbox{evidence}}$
+	\item \emph{Evidence} $P(X=x)$ is normalization / scaling factor
+\end{enumerate}
+Maximum A Posteriori estimate
+$\mathbf{w_{MAP}} = \argmax_{\mathbf{w}} \pi(\mathbf{w}|d,\mathbf{x})$
+
+\section{Linear Models}
+Gradient Descent Algorithm
+\begin{enumerate}
+	\item Start from arbitrary point $\mathbf{w}(0)$
+	\item find a direction by means of a gradient: $\nabla\xi = [\frac{\partial f}{\partial w_1}, \dots, \frac{\partial f}{\partial w_n}]$
+	\item make a small step in that direction: $\Delta\mathbf{w} = -\eta\nabla\xi$
+	\item repeat the whole process
+\end{enumerate}
+\textbf{ADALINE} uses an identity activation function and update rule is
+$$\Delta\mathbf{w} = + \eta\mathbf{x}(d-y)$$
+
+\section{Multi-Layer Perceptrons}
+Generalized Backprop delta rule
+$$
+\Delta w_{ji} = \eta \delta_j y_i
+$$
+
+$$
+\delta_j = \begin{cases} \varphi '(v_j)(d-y_j) & \mbox{if }j\mbox{ is output node} \\
+ \varphi '(v_j)\sum_{k} \delta_k w_{kj} & \mbox{ if }j\mbox{ is hidden node} \end{cases}
+$$
+
+\section{Self-Organizing Maps}
+Three processes:
+\begin{description}
+	\item[1. Competition]: find the winning neuron: $i(\mathbf{x})=\argmin_j \Vert \mathbf{x}-\mathbf{w_j}\Vert$
+	\item[2. Cooperation]: determine neighbourhood function: $h_{j,i} = \exp(-\frac{d_{j,i}^2}{2\sigma^2})$
+	\item[3. Adaptation]: adapt weights with:\\
+	$\mathbf{w_j}(n+1) = \mathbf{w_j}(n)+\eta(n)h_{j,i}(n)(\mathbf{x}(n)-\mathbf{w_j}(n))$
+\end{description}
+
+
+\end{document}
