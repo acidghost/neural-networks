@@ -119,15 +119,41 @@ Possible \textbf{kernel functions}
 \end{itemize}
 
 \section{Principal Component Analysis}
+Main idea: \textbf{discover significant patterns or features in input data through use of unlabelled examples}.
+\begin{description}
+	\item \emph{Statistical method} \\
+		\footnotesize
+		\textbf{Step 1} start with a dataset and subtract mean\\
+		\textbf{Step 2} calculate covariance matrix\\
+		\textbf{Step 3} calculate the eigenvectors and eigenvalues; the eigenvector with the highest eigenvalue is \emph{the} principal component
+		\textbf{Step 4} select how much to reduce the dimension of the dataset by selecting the $p$ highest principal components
+		\normalsize
+	\item \emph{Self-organization} \\
+		\footnotesize
+		\textbf{Self-amplification} Hebb's postulate: If two neurons on either side of a connection are activated simultaneously (i.e. synchronously), then the strength of that connection is selectively increased. In the case of asynchronous activation the connection strength is decreased \\
+		\textbf{Competition} neurons compete with each other in a winner takes all fashion \\
+		\textbf{Cooperation} modification in synaptic weights and neurons tend to cooperate \\
+		\textbf{Structural information} redundant information is acquired in the form of knowledge \\
+		\textbf{Hebbian learning rule}
+		\normalsize
+		$$\Delta w_{ji}=\eta(y_ix_i-y_i\sum_{k=1}^jw_{ki}y_k)$$
+\end{description}
 
 \section{Self-Organizing Maps}
-Three processes:
+Goal: Transform an incoming signal pattern of arbitrary dimension into a one- or two-dimensional discrete map, and perform this translation adaptively in a topologically ordered fashion \\
+\textbf{Three processes:}
 \begin{description}
 	\item[1. Competition]: find the winning neuron: $i(\mathbf{x})=\argmin_j \Vert \mathbf{x}-\mathbf{w_j}\Vert$
 	\item[2. Cooperation]: determine neighbourhood function: $h_{j,i} = \exp(-\frac{d_{j,i}^2}{2\sigma^2})$ \quad where $d_{j,i}$ is the lateral distance from winning neuron
 	\item[3. Adaptation]: adapt weights with:\\
 	$\mathbf{w_j}(n+1) = \mathbf{w_j}(n)+\eta(n)h_{j,i}(n)(\mathbf{x}(n)-\mathbf{w_j}(n))$
 \end{description}
-
+\textbf{Two phases:}
+\begin{enumerate}
+	\item Ordering phase: topological ordering of the weight vectors; can take 1000 iterations with $\eta=[0.1, 0.01]$
+	\item Convergence phase: fine tune the map and provide accurate statistical quantification (small $\eta$)
+\end{enumerate}
+\textbf{Contextual maps}
+Visualize SOM in a different way. \emph{Feature map} see which neurons are excited when an unseen test pattern is presented. \emph{Semantic map} creates a form of clustering or unsupervised categorization
 
 \end{document}
