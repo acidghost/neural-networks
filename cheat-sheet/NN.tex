@@ -1,5 +1,9 @@
-\documentclass[11pt]{article}
+\documentclass[11pt, twocolumn]{article}
 \usepackage{amsmath}
+\usepackage{geometry}
+ \geometry{ a4paper, total={170mm,257mm}, left=7mm, top=10mm, right=7mm, bottom=10mm}
+ 
+\pagenumbering{gobble}
 
 \newcommand{\argmin}{\operatornamewithlimits{argmin}}
 \newcommand{\argmax}{\operatornamewithlimits{argmax}}
@@ -14,15 +18,15 @@
 \maketitle
 
 \section{Perceptron}
-\subsection{Perceptron Convergence Algorithm}
+Perceptron Convergence Algorithm
+
 \footnotesize
+For linearly sep. data; decision boundary: $\sum \mathbf{w_i x_i} + b = 0$
 \begin{enumerate}
 	\item Variables \& parameters:\\
 	$\mathbf{x}(n) = \left[1, x_1(n), \dots, x_m(n)\right]^T$\\
 	$\mathbf{w}(n) = \left[b, w_1(n), \dots, w_m(n)\right]^T$\\
-	$y(n) = \mbox{net out}$\\
-	$d(n) = \mbox{target}$\\
-	$\eta = \mbox{learning rate}$
+	$y(n) = \mbox{net out}$\qquad$d(n) = \mbox{target}$\qquad$\eta = \mbox{learning rate}$
 	\item \emph{Initialization} $\mathbf{w}(0) = \mathbf{0}$ then for $n = 1, 2, \dots$ do the following
 	\item \emph{Activation} Feed input $\mathbf{x}(n)$ to network
 	\item \emph{Compute actual response} as $y(n) = \sign(\mathbf{w}^T(n)\mathbf{x}(n))$
@@ -40,36 +44,87 @@
 	\item \emph{Posterior} $P(C_i|X=x) = \frac{\mbox{likelihood x prior}}{\mbox{evidence}}$
 	\item \emph{Evidence} $P(X=x)$ is normalization / scaling factor
 \end{enumerate}
-Maximum A Posteriori estimate
-$\mathbf{w_{MAP}} = \argmax_{\mathbf{w}} \pi(\mathbf{w}|d,\mathbf{x})$
+$$\mathbf{w_{MAP}} = \argmax_{\mathbf{w}} \pi(\mathbf{w}|d,\mathbf{x})$$
 
 \section{Linear Models}
-Gradient Descent Algorithm
+\footnotesize
+\textbf{Gradient Descent Algorithm}
 \begin{enumerate}
 	\item Start from arbitrary point $\mathbf{w}(0)$
 	\item find a direction by means of a gradient: $\nabla\xi = [\frac{\partial f}{\partial w_1}, \dots, \frac{\partial f}{\partial w_n}]$
 	\item make a small step in that direction: $\Delta\mathbf{w} = -\eta\nabla\xi$
 	\item repeat the whole process
 \end{enumerate}
-\textbf{ADALINE} uses an identity activation function and update rule is
+\normalsize
+\textbf{ADALINE} uses an identity activation (continuous error measure) function and update rule is
 $$\Delta\mathbf{w} = + \eta\mathbf{x}(d-y)$$
+\textbf{Linear regression} uses sigmoid activation function and delta rule is
+$$\Delta\mathbf{w} = + \eta(d-\varphi(net))\varphi'(net)\mathbf{x}$$
+\textbf{Cover's Theorem} "A complex pattern-classification problem, cast in a high dimensional space nonlinearly, is more likely to be linearly separable than in a low-dimensional space, provided that the space is not densely populated."
 
 \section{Multi-Layer Perceptrons}
+Considering NN for XOR:
+\begin{itemize}
+	\item Network output $y = \varphi(net) = \varphi(y_1u_1 + y_2u_2) = \varphi(u_1\varphi(net_1) + u_2\varphi(net_2))$
+	\item Network error $e = \frac{1}{2}(d-y)^2$
+\end{itemize}
 Generalized Backprop delta rule
-$$
-\Delta w_{ji} = \eta \delta_j y_i
-$$
-
+$$\Delta w_{ji} = \eta \delta_j y_i$$
 $$
 \delta_j = \begin{cases} \varphi '(v_j)(d-y_j) & \mbox{if }j\mbox{ is output node} \\
  \varphi '(v_j)\sum_{k} \delta_k w_{kj} & \mbox{ if }j\mbox{ is hidden node} \end{cases}
 $$
 
+\section{Radial-Basis Function nets}
+Main idea: build local model of reference points and combine them.
+\begin{itemize}
+	\item \emph{Hidden layer} returns closeness from reference points
+	\item \emph{Output layer} standard linear regression (like ADALINE)
+	\item \emph{Closeness} is a radial function of the Euclidean distance:\\
+	\centerline{$\phi(||x-t_i||)$\qquad$\phi(r) = exp(-\frac{r^2}{2\sigma^2})$}\\
+	\centerline{$\phi(r) = (r^2 + \sigma^2)^{-\alpha},\quad\alpha>0$\qquad$\phi(r) = r^2\ln(r)$}
+\end{itemize}
+Training:
+\begin{enumerate}
+	\item Learn centres using K-means (unsupervised)
+	\item Learn weights from hidden to output using LMS (supervised)
+\end{enumerate}
+
+\section{Support Vector Machines}
+Main idea: \textbf{maximize margin around decision hyperplane}; decision function is specified
+by a subset of training samples: the support vectors.
+\begin{align}
+	\mathbf{w_o^Tx_i}+b_o\geq+1 && \mbox{when }d_i=+1 \\ 
+	\mathbf{w_o^Tx_i}+b_o\leq-1 && \mbox{when }d_i=-1
+\end{align}
+Maximizing the margin of separation $\rho$ is equivalent to minimize the Euclidean norm of the weight vector \textbf{w}
+$$\rho = \frac{2}{||\mathbf{w_o}||}$$
+\textbf{Problem.} Find values of \textbf{w} that minimize
+$$\phi(\mathbf{w}) = \frac{1}{2}\mathbf{w^Tw}$$
+given constraints
+$$d_i(\mathbf{w^Tx_i+b})\geq1\qquad\mbox{for }i=1,2,\dots,N$$
+\textbf{Lagrangian function} (linearly separable) ($\alpha_i>0$ for support vectors)
+$$J(\mathbf{w},b,\alpha)=\frac{1}{2}\mathbf{w^Tw}-\sum_{i=1}^{N}\alpha_i[d_i(\mathbf{w^Tw}+b)-1]$$
+Solution
+$$Q(\alpha)=\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1}^N\sum_{j=0}^N\alpha_i\alpha_jd_id_j\mathbf{x_i^Tx_j}$$
+By setting partial derivatives to zero we obtain
+$$\mathbf{w}=\sum_{i=1}^n \alpha_iy_i\mathbf{x_i}$$
+Solution Non linear with kernel function $K(x_i,x_j)$
+$$Q(\alpha)=\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1}^N\sum_{j=0}^N\alpha_i\alpha_jd_id_j\phi(\mathbf{x_i^T})\phi(\mathbf{x_j})$$
+Possible \textbf{kernel functions}
+\begin{itemize}
+	\item polynomial $K(x,y)=(xy+1)^p$
+	\item RBF gaussian $K(x,y)=\exp(-\frac{||x-y||^2}{2\sigma^2})$
+	\item sigmoid $K(x,y)=\tanh(kxy-\delta)$
+\end{itemize}
+
+\section{Principal Component Analysis}
+
 \section{Self-Organizing Maps}
 Three processes:
 \begin{description}
 	\item[1. Competition]: find the winning neuron: $i(\mathbf{x})=\argmin_j \Vert \mathbf{x}-\mathbf{w_j}\Vert$
-	\item[2. Cooperation]: determine neighbourhood function: $h_{j,i} = \exp(-\frac{d_{j,i}^2}{2\sigma^2})$
+	\item[2. Cooperation]: determine neighbourhood function: $h_{j,i} = \exp(-\frac{d_{j,i}^2}{2\sigma^2})$ \quad where $d_{j,i}$ is the lateral distance from winning neuron
 	\item[3. Adaptation]: adapt weights with:\\
 	$\mathbf{w_j}(n+1) = \mathbf{w_j}(n)+\eta(n)h_{j,i}(n)(\mathbf{x}(n)-\mathbf{w_j}(n))$
 \end{description}
