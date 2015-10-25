@@ -51,7 +51,7 @@ if strncmp(initialization, '+', 1) == 1
         % Step3: Choose one new data point at random as a new center, using 
         % a weighted probability distribution where a point x is chosen 
         % with probability proportional to D(x)^2.
-        new_centre = RouletteWheelSelection(distances.^2);
+        new_centre = RouletteWheelSelection(distances.^2 ./ sum(distances.^2));
         centres(k, :) = x(new_centre, :);
     end
 else
